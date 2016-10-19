@@ -1,13 +1,24 @@
 import numpy as np
 import matplotlib.pylab as plt
 
-def draw_earth(radii):
+################################################################################
+def get_earth_data(filename='Earth_density_and_earthquake_velocity_data_SMOOTHED.csv'):
+    vals = np.loadtxt(filename,skiprows=1,dtype=float,unpack=True,delimiter=',')
+    radii = vals[0]
+    velocities = vals[3]
+
+    return radii,velocities
+################################################################################
+
+################################################################################
+def draw_earth(radii,alpha=0.05):
 #colors = ['y','b','r','g']
     for i,r in enumerate(radii):
-        circle = plt.Circle((0, 0), radius=r,alpha=0.05)#,fc=colors[i])
+        circle = plt.Circle((0, 0), radius=r,alpha=alpha)#,fc=colors[i])
         plt.gca().add_patch(circle)
     #plt.xlim(-1.2,1.2)
     #plt.ylim(-1.2,1.2)
+################################################################################
 
 def normal(r,x,y):
     return r
