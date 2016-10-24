@@ -320,4 +320,145 @@ def propagate_rays(radii,velocities,origin,angles):
 
     return allrays,tirs
         
+################################################################################
+################################################################################
 
+def plot_velocities(radii,velocities):
+
+    if len(radii) != len(velocities):
+        print "Yikes!"
+        print "You have %d entries in your list of radii..." % (len(radii))
+        print "and have %d entries in your list of velocities." % (len(velocities))
+        print 
+        print "You should fix this before you go any further."
+        print "You need the same number of entries in each."
+        print
+        print "radii:"
+        print radii
+        print "\nvelocities:"
+        print velocities
+        return
+
+    plt.figure()
+    tempv = list(velocities)
+    tempr = list(radii)
+    tempv.append(tempv[-1])
+    tempr.append(0.0)
+    #plt.plot(tempv,tempr,'o-')
+    npts = len(tempv)
+    for i in range(0,npts-1):
+        v0 =tempv[i]
+        r0 =tempr[i]
+        r1 =tempr[i+1]
+        plt.plot([v0,v0],[r0,r1],'.-',markersize=1,color='k',linewidth=4)
+    plt.ylabel("Radius (km)",fontsize=18)
+    plt.xlabel("Speed of sound (km/s)",fontsize=18)
+    plt.xlim(0,1.2*max(tempv))
+    plt.ylim(0,1.2*max(tempr))
+
+
+
+################################################################################
+################################################################################
+
+def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
+
+    ############################################################################
+    # Need to add on a thin shell for now, just for rays that would just
+    # never enter a second layer and would just hit the surface.
+    # NEED TO FIX THIS!!!!!!!!!!!!!!!!!
+    ############################################################################
+    if type(radii)==list and type(velocities)==list:
+        r = np.zeros(len(radii)+1)
+        v = np.zeros(len(radii)+1)
+
+        r[1:] = radii[:]
+        v[1:] = velocities[:]
+
+        r[0] = 1.00001*r[1]
+        if v[1]-v[2]>0:
+            v[0] = 1.00001*v[1]
+        else:
+            v[0] = 0.99999*v[1]
+
+        radii = r
+        velocities = v
+
+
+	# Earthquake origin (x/y-coordinates)
+    origin = [0.0, radii[0]]
+
+    raylo = -90.
+    rayhi = -10.
+    ray_intervals = np.abs(raylo - rayhi)/nrays
+    print ray_intervals
+    angles = np.arange(raylo,rayhi,ray_intervals)
+
+    # Propagate the rays!
+    allrays,tirs = propagate_rays(radii,velocities,origin,angles)
+    #print angles
+
+    plt.figure(figsize=(12,6))
+    plt.subplot(1,2,1)
+
+    draw_earth(radii,alpha=0.05)
+
+    times = []
+    ang_distances = []
+
+    for tir,rays in zip(tirs,allrays):
+        if tir==False:
+        #if len(rays)>1:
+            #print "----"
+            time = 0
+            for rayinfo in rays:
+                ray = rayinfo[0]
+                radius = rayinfo[1]
+                plt.plot(ray[0],ray[1],'k-',linewidth=0.5,alpha=1.0)
+                #print radius,ray
+                
+                vel = velocities[radius]
+                d = distance_traversed(ray[0],ray[1])
+                time += d/vel
+                #print "tot time, time, d, vel: ",time,d/vel,d,vel
+
+            times.append(time)
+
+            last_ray = rays[-1]
+            rayinfo = last_ray[0]
+            x = rayinfo[0][1]
+            y = rayinfo[1][1]
+            ang_distance = np.arctan2(y,x)
+            ang_distances.append(ang_distance)
+                
+    plt.xlim(-1.2*radii[0],1.2*radii[0])
+    plt.ylim(-1.2*radii[0],1.2*radii[0])
+    plt.xlabel("Radius (km)",fontsize=18)
+    plt.ylabel("Radius (km)",fontsize=18)
+
+
+    plt.subplot(1,2,2)
+    ang_distances = np.array(ang_distances)
+    ang_distances = np.pi/2.0 - ang_distances
+
+    plt.plot(np.rad2deg(ang_distances),times,'bo',label='Your model')
+
+    if real_earth:
+        xe,ye = np.loadtxt('earth_500pts.csv',delimiter=',',unpack=True,dtype=float)
+        #xe = xe.astype(float)
+        #ye = ye.astype(float)
+        plt.plot(xe,ye,'ro',label='Realistic Earth model')
+
+
+
+    plt.xlabel("Angular distance (degrees)",fontsize=18)
+    plt.ylabel("Arrival time (seconds)", fontsize=18)
+    plt.ylim(0)
+    plt.xlim(0)
+    plt.legend(loc='upper left')
+
+    plt.tight_layout()
+
+    if filename != None:
+        a = np.array((np.rad2deg(ang_distances),times))
+        np.savetxt(filename, a.transpose(), delimiter=",")
