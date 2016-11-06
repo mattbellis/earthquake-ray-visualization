@@ -339,7 +339,7 @@ def plot_velocities(radii,velocities):
         print velocities
         return
 
-    plt.figure()
+    plt.figure(figsize=(7,6))
     tempv = list(velocities)
     tempr = list(radii)
     tempv.append(tempv[-1])
@@ -355,6 +355,8 @@ def plot_velocities(radii,velocities):
     plt.xlabel("Speed of sound (km/s)",fontsize=18)
     plt.xlim(0,1.2*max(tempv))
     plt.ylim(0,1.2*max(tempr))
+
+    plt.tight_layout()
 
 
 
@@ -391,7 +393,7 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
     raylo = -90.
     rayhi = -10.
     ray_intervals = np.abs(raylo - rayhi)/nrays
-    print ray_intervals
+    #print ray_intervals
     angles = np.arange(raylo,rayhi,ray_intervals)
 
     # Propagate the rays!
@@ -447,7 +449,7 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
         xe,ye = np.loadtxt('earth_500pts.csv',delimiter=',',unpack=True,dtype=float)
         #xe = xe.astype(float)
         #ye = ye.astype(float)
-        plt.plot(xe,ye,'ro',label='Realistic Earth model')
+        plt.plot(xe,ye,'r+',markersize=10,label='Realistic Earth model')
 
 
 
@@ -455,7 +457,7 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
     plt.ylabel("Arrival time (seconds)", fontsize=18)
     plt.ylim(0)
     plt.xlim(0)
-    plt.legend(loc='upper left')
+    plt.legend(loc='upper left',numpoints=1)
 
     plt.tight_layout()
 
