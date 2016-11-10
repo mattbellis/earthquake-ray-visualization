@@ -445,6 +445,7 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
 
     plt.plot(np.rad2deg(ang_distances),times,'bo',label='Your model')
 
+    xe,ye = None,None
     if real_earth:
         xe,ye = np.loadtxt('earth_500pts.csv',delimiter=',',unpack=True,dtype=float)
         #xe = xe.astype(float)
@@ -460,6 +461,28 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
     plt.legend(loc='upper left',numpoints=1)
 
     plt.tight_layout()
+
+    if real_earth:
+        #plt.plot(np.rad2deg(ang_distances),times,'bo',label='Your model')
+        yinterp = np.interp(np.rad2deg(ang_distances),xe[::-1],ye[::-1])
+        dy = times - yinterp
+        #print dy
+        #print times
+        #print yinterp
+        plt.figure(figsize=(12,6))
+        plt.subplot(1,2,2)
+        plt.plot([0.0, 180],[0,0],'k--')
+        plt.plot(np.rad2deg(ang_distances),dy,'bo',label='Difference between your model and real Earth')
+        plt.xlabel("Angular distance (degrees)",fontsize=18)
+        plt.ylabel("Your model - real Earth (seconds)", fontsize=18)
+        #plt.ylim(0)
+        plt.xlim(0)
+        #plt.legend(loc='upper left',numpoints=1)
+        plt.tight_layout()
+
+
+
+
 
     if filename != None:
         a = np.array((np.rad2deg(ang_distances),times))
