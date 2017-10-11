@@ -326,17 +326,17 @@ def propagate_rays(radii,velocities,origin,angles):
 def plot_velocities(radii,velocities):
 
     if len(radii) != len(velocities):
-        print "Yikes!"
-        print "You have %d entries in your list of radii..." % (len(radii))
-        print "and have %d entries in your list of velocities." % (len(velocities))
-        print 
-        print "You should fix this before you go any further."
-        print "You need the same number of entries in each."
-        print
-        print "radii:"
-        print radii
-        print "\nvelocities:"
-        print velocities
+        print("Yikes!")
+        print("You have %d entries in your list of radii..." % (len(radii)))
+        print("and have %d entries in your list of velocities." % (len(velocities)))
+        print() 
+        print("You should fix this before you go any further.")
+        print("You need the same number of entries in each.")
+        print()
+        print("radii:")
+        print(radii)
+        print("\nvelocities:")
+        print(velocities)
         return
 
     plt.figure(figsize=(7,6))

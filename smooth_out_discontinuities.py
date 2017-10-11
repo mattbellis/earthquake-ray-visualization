@@ -16,7 +16,7 @@ for i,v in enumerate(vals):
 
 for v in vals:
     output = ','.join(map(str,v)) 
-    print output
+    print(output)
 
 
 
