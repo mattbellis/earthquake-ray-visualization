@@ -363,7 +363,7 @@ def plot_velocities(radii,velocities):
 ################################################################################
 ################################################################################
 
-def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
+def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False,figure_size='medium'):
 
     ############################################################################
     # Need to add on a thin shell for now, just for rays that would just
@@ -400,7 +400,10 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
     allrays,tirs = propagate_rays(radii,velocities,origin,angles)
     #print angles
 
-    plt.figure(figsize=(12,6))
+    if figure_size=='big':
+        plt.figure(figsize=(24,12))
+    else:
+        plt.figure(figsize=(12,6))
     plt.subplot(1,2,1)
 
     draw_earth(radii,alpha=0.05)
@@ -470,9 +473,11 @@ def make_earthquake(radii,velocities,nrays=10,filename=None,real_earth=False):
         #print times
         #print yinterp
         plt.figure(figsize=(12,6))
+        plt.subplot(1,2,1)
+        plt.plot([0,0],[0,0])
         plt.subplot(1,2,2)
         plt.plot([0.0, 180],[0,0],'k--')
-        plt.plot(np.rad2deg(ang_distances),dy,'bo',label='Difference between your model and real Earth')
+        plt.plot(np.rad2deg(ang_distances),dy,'ms',label='Difference between your model and real Earth')
         plt.xlabel("Angular distance (degrees)",fontsize=18)
         plt.ylabel("Your model - real Earth (seconds)", fontsize=18)
         #plt.ylim(0)
